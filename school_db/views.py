@@ -58,8 +58,14 @@ SELECT `school_db_student`.`id`,
 # Order the data by highest GPAs first (descending).
 # Print out each student's full name and gpa to the terminal
 def problem_one(request):
+  student_gpa = Student.objects.filter(gpa__gt=3.0)
+  students = student_gpa.all().order_by('-gpa')
+  for student in students:
+    print(
+       f'First Name: {student.first_name} Last Name: {student.last_name} GPA: {student.gpa}'
+    )
 
-    return complete(request)
+  return complete(request)
 
 
 # Supporting Query Method Documentation:
@@ -97,8 +103,15 @@ SELECT `school_db_student`.`id`,
 # Order by hire date ascending
 # Print out the instructor's full name and hire date to the terminal
 def problem_two(request):
+  instructors = Instructor.objects.filter(hire_date__year__lt=2010)
+  ascending_instructors = instructors.order_by('hire_date')
+  for instructor in ascending_instructors:
+    print(
+      f'''Full Name: {instructor.first_name} {instructor.last_name}
+       hire_date: {instructor.hire_date}'''
+    )
+  return complete(request)
 
-    return complete(request)
 
 
 # Supporting Query Method Documentation:
@@ -138,8 +151,12 @@ SELECT `school_db_instructor`.`id`,
 # Print the instructors name and courses that he belongs to in the terminal
 # (Do not hard code his name in the print)
 def problem_three(request):
-
-    return complete(request)
+  instructors = Instructor.objects.get(id=2)
+  print(f'Instructor Name: {instructors.first_name} {instructors.last_name}')
+  courses = Course.objects.filter(instructor_id=2)
+  for course in courses:
+    print(f'Course: {course.name}')
+  return complete(request)
 
 
 # Supporting Query Method Documentation:
@@ -184,8 +201,15 @@ SELECT `school_db_instructor`.`id`,
 
 # Get the count of students, courses, and instructors and print them in the terminal
 def problem_four(request):
-
-    return complete(request)
+  students = Student.objects.all().count()
+  instructors = Instructor.objects.all().count()
+  courses = Course.objects.all().count()
+  print(f'''
+   Students Count: {students}
+   Instructors Count: {instructors}
+   Courses Count: {courses}
+  ''')
+  return complete(request)
 
 
 # Supporting Query Method Documentation:
@@ -228,8 +252,14 @@ SELECT COUNT(*) AS `__count`
 # Print the new student's id, full name, year, and gpa to the terminal
 # NOTE every time you execute this function a duplicate student will be created with a different primary key number
 def problem_five(request):
-
-    return complete(request)
+  # new_student = Student.objects.create(first_name='Arturo', last_name='Diaz', year='12', gpa='4.0')
+  # print(f'''
+  # Id: {new_student.id}
+  # Full Name: {new_student.first_name} {new_student.last_name}
+  # Year: {new_student.year}
+  # GPA: {new_student.gpa}
+  # ''')
+  return complete(request)
 
 
 # Supporting Query Method Documentation:
@@ -263,7 +293,13 @@ def problem_six(request):
 
     # Make sure to set this equal to the primary key of the row you just created!
     student_id = 11
-
+    student_update = Student.objects.filter(id=student_id).update(gpa=3.0)
+    students = Student.objects.get(id=student_id)
+    print(f'''
+    Id: {students.id}
+    Full Name: {students.first_name} {students.last_name}
+    GPA: {students.gpa}
+    ''')
     return complete(request)
 
 
@@ -310,7 +346,7 @@ def problem_seven(request):
 
     # Make sure to set this equal to the primary key of the row you just created!
     student_id = 11
-
+    delete_student = Student.objects.filter(id=student_id).delete()
     try:
         student = Student.objects.get(pk=student_id)
     except ObjectDoesNotExist:
@@ -366,9 +402,14 @@ SELECT `school_db_student`.`id`,
 # Find all of the instructors that only belong to a single course
 # Print out the instructors full name and number of courses to the console
 def bonus_problem(request):
+  single_filtered = Instructor.objects.annotate(course_count = Count('course__id')).filter(course_count=1)
+  
+  for instructor in single_filtered:
+      print(f'''
+      instructor name: {instructor.first_name} {instructor.last_name}
+      ''')
 
-    return complete(request)
-
+  return complete(request)
 
 # Supporting Query Method Documentation:
 """
